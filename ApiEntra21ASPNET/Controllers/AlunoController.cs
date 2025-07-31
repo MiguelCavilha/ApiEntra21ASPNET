@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Modelo.Aplicattion.Interfaces;
 
 namespace ApiEntra21ASPNET.Controllers
 {
@@ -6,7 +7,13 @@ namespace ApiEntra21ASPNET.Controllers
     [ApiController]
     public class AlunoController : Controller
     {
-        // GET: Aluno
+        private readonly IAlunoAplicattion _alunoAplicattion;
+
+        public AlunoController(IAlunoAplicattion alunoAplicattion)
+        {
+            _alunoAplicattion = alunoAplicattion;
+        }
+
         [HttpGet("BuscarDadosAluno/{id})")]
 
         public IActionResult BuscarDadosAluno(int id)
@@ -14,18 +21,9 @@ namespace ApiEntra21ASPNET.Controllers
             try
             {
 
-                // Simulate fetching data from a database or service
-                var aluno = new
-                {
-                    Id = id,
-                    Nome = "João da Silva",
-                    Idade = 20,
-                    Cep = "12345-678"
-                };
-                if (aluno == null)
-                {
-                    return NotFound("Aluno not found.");
-                }
+
+                var aluno = _alunoAplicattion.BuscarAluno(id);
+
                 return Ok(aluno);
 
             }
