@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Modelo.Aplicattion.Interfaces;
 
 namespace ApiEntra21ASPNET.Controllers
@@ -29,10 +30,45 @@ namespace ApiEntra21ASPNET.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception (not implemented here)
+
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
-           
+
         }
+
+        [HttpPost("AdicionarAluno")]
+
+        public IActionResult AdicionarAluno([FromBody] Modelo.Domain.Aluno aluno)
+        {
+            try
+            {
+                if (aluno == null)
+                {
+                    return BadRequest("Aluno cannot be null");
+                }
+                _alunoAplicattion.AdicionarAluno(aluno);
+                return CreatedAtAction(nameof(BuscarDadosAluno), new { id = aluno.Id }, aluno);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+
+        }
+
+        [HttpDelete("ExcluirAluno/{id}")]
+        public IActionResult ExcluirAluno(int id)
+        {
+            try
+            {
+                _alunoAplicattion.ExcluirAluno(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
     }
 }

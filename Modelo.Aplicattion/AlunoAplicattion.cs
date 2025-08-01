@@ -18,10 +18,19 @@ namespace Modelo.Aplicattion
         public Aluno BuscarAluno(int id)
         {
             return _alunoRepositorio.BuscarID(id);
+
+
         }
 
+        public void AdicionarAluno(Aluno aluno)
+        {
+            _alunoRepositorio.AdicionarAluno(aluno);
+        }
 
-
+        public void ExcluirAluno(int id)
+        {
+            _alunoRepositorio.ExcluirAluno(id);
+        }
 
     }
 }
