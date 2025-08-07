@@ -8,7 +8,7 @@ namespace Modelo.Aplicattion.Interfaces
     {
         Aluno BuscarAluno(int id);
 
-        void AdicionarAluno(Aluno aluno);
+        string AdicionarAluno(Aluno aluno);
         void ExcluirAluno(int id);
     }
 }

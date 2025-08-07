@@ -1,74 +1,80 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using Modelo.Aplicattion.Interfaces;
+using Modelo.Domain;
 
-namespace ApiEntra21ASPNET.Controllers
+namespace ApiEntra21.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AlunoController : Controller
     {
-        private readonly IAlunoAplicattion _alunoAplicattion;
+        private readonly IAlunoAplicattion _alunoApplication;
 
-        public AlunoController(IAlunoAplicattion alunoAplicattion)
+        public AlunoController(IAlunoAplicattion alunoApplication)
         {
-            _alunoAplicattion = alunoAplicattion;
+            _alunoApplication = alunoApplication;
         }
 
-        [HttpGet("BuscarDadosAluno/{id})")]
-
+        [HttpGet("BuscarDadosAluno/{id}")]
         public IActionResult BuscarDadosAluno(int id)
         {
+            Retorno<Aluno> retorno = new(null);
+
             try
             {
+                var aluno = _alunoApplication.BuscarAluno(id);
 
-
-                var aluno = _alunoAplicattion.BuscarAluno(id);
-
-                return Ok(aluno);
-
-            }
-            catch (Exception ex)
-            {
-
-                return StatusCode(500, "Internal server error: " + ex.Message);
-            }
-
-        }
-
-        [HttpPost("AdicionarAluno")]
-
-        public IActionResult AdicionarAluno([FromBody] Modelo.Domain.Aluno aluno)
-        {
-            try
-            {
-                if (aluno == null)
+                if (aluno != null)
                 {
-                    return BadRequest("Aluno cannot be null");
+                    retorno.CarregaRetorno(aluno, true, "Consulta realizada com Sucesso!", 200);
                 }
-                _alunoAplicattion.AdicionarAluno(aluno);
-                return CreatedAtAction(nameof(BuscarDadosAluno), new { id = aluno.Id }, aluno);
+                else
+                {
+                    retorno.CarregaRetorno(aluno, false, $"Aluno com id: {id} não foi encontrado", 204);
+                }
+
+
+                return Ok(retorno);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return StatusCode(500, "Internal server error: " + ex.Message);
+
+                retorno.CarregaRetorno(false, e.Message, 400);
+                return BadRequest();
             }
-
         }
+        [HttpPost("InserirDadosAluno")]
+        public IActionResult InserirDadosAluno([FromBody] Aluno aluno)
+        {
+            Retorno retorno = new();
+            try
+            {
+                var mensagem = _alunoApplication.AdicionarAluno(aluno);
+                retorno.CarregaRetorno(string.IsNullOrEmpty(mensagem), mensagem, 200);
 
-        [HttpDelete("ExcluirAluno/{id}")]
-        public IActionResult ExcluirAluno(int id)
+                _alunoApplication.AdicionarAluno(aluno);
+
+                return Ok(retorno);
+            }
+            catch (Exception e)
+            {
+                retorno.CarregaRetorno(false, e.Message, 400);
+                return BadRequest();
+            }
+        }
+        [HttpDelete("ExcluirDadosAluno/{id}")]
+        public IActionResult ExcluirDadosAluno(int id)
         {
             try
             {
-                _alunoAplicattion.ExcluirAluno(id);
-                return NoContent();
+                _alunoApplication.ExcluirAluno(id);
+                return Ok();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                return StatusCode(500, "Internal server error: " + ex.Message);
+                return BadRequest();
             }
         }
-
     }
+
 }
